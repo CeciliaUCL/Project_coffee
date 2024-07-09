@@ -19,21 +19,25 @@ class _HomeConnectLoginState extends State<HomeConnectLogin> {
         title: Text('Home Connect Authentication'),
       ),
       body: WebView(
-        initialUrl: 'https://simulator.home-connect.com/security/oauth/authorize?response_type=code&client_id=2834200440E227B1C1DAF6687F0D3E4B56AEBAAB281F02D37B3266CB4BE6BB3E&scope=IdentifyAppliance%20Monitor%20Control',
+        initialUrl: 'https://simulator.home-connect.com/security/oauth/authorize?response_type=code&client_id=2834200440E227B1C1DAF6687F0D3E4B56AEBAAB281F02D37B3266CB4BE6BB3E&redirect_uri=https://webhook.site/c1da6b5d-d004-450a-92dd-5070ec5a02b8&scope=IdentifyAppliance%20Monitor%20Control',
         javascriptMode: JavascriptMode.unrestricted,
         onWebViewCreated: (WebViewController webViewController) {
           _webViewController = webViewController;
         },
         navigationDelegate: (NavigationRequest request) async {
-          if (request.url.contains('code=')) {
-            final Uri uri = Uri.parse(request.url);
-            final String? code = uri.queryParameters['code'];
-            if (code != null) {
-              await _exchangeCodeForToken(code);
-              Navigator.pop(context, true);
-            }
+          final Uri uri = Uri.parse(request.url);
+          final String? code = uri.queryParameters['code'];
+          final String? error = uri.queryParameters['error'];
+
+          if (code != null) {
+            await _exchangeCodeForToken(code);
+            Navigator.pop(context, true);
+            return NavigationDecision.prevent;
+          } else if (error != null) {
+            Navigator.pop(context, false);
             return NavigationDecision.prevent;
           }
+
           return NavigationDecision.navigate;
         },
       ),

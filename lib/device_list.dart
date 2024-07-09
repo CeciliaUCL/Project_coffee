@@ -77,6 +77,11 @@ class _DeviceListState extends State<DeviceList> {
 
     if (result == true) {
       checkAuthorization();
+    } else {
+      // 用户点击取消按钮后的处理逻辑，例如显示提示信息
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Authorization cancelled by user'),
+      ));
     }
   }
 
