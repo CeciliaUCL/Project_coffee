@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SprinklePage extends StatefulWidget {
   @override
@@ -14,56 +16,357 @@ class _SprinklePageState extends State<SprinklePage> {
     });
   }
 
+  Future<void> _runCircle() async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://192.168.1.114:5000/run_circle'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print('Output: ${data['output']}');
+        print('Error: ${data['error']}');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Circle command sent successfully!'),
+        ));
+      } else {
+        print('Failed to run code: ${response.reasonPhrase}');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Failed to run circle command.'),
+        ));
+      }
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Error running circle command.'),
+      ));
+    }
+  }
+  
+
+  Future<void> _runSquare() async {
+    try {
+        final response = await http.post(
+            Uri.parse('http://192.168.1.114:5000/run_square'),
+        );
+
+        if (response.statusCode == 200) {
+            final data = json.decode(response.body);
+            print('Output: ${data['output']}');
+            print('Error: ${data['error']}');
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Square command sent successfully!'),
+            ));
+        } else {
+            print('Failed to run code: ${response.reasonPhrase}');
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Failed to run square command.'),
+            ));
+        }
+    } catch (e) {
+        print('Error: $e');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Error running square command.'),
+        ));
+    }
+  }
+
+Future<void> _runTriangle() async {
+    try {
+        final response = await http.post(
+            Uri.parse('http://192.168.1.114:5000/run_triangle'),
+        );
+
+        if (response.statusCode == 200) {
+            final data = json.decode(response.body);
+            print('Output: ${data['output']}');
+            print('Error: ${data['error']}');
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Triangle command sent successfully!'),
+            ));
+        } else {
+            print('Failed to run code: ${response.reasonPhrase}');
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Failed to run triangle command.'),
+            ));
+        }
+    } catch (e) {
+        print('Error: $e');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Error running square command.'),
+        ));
+    }
+  }
+
+  Future<void> _runStar() async {
+    try {
+        final response = await http.post(
+            Uri.parse('http://192.168.1.114:5000/run_star'),
+        );
+
+        if (response.statusCode == 200) {
+            final data = json.decode(response.body);
+            print('Output: ${data['output']}');
+            print('Error: ${data['error']}');
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Star command sent successfully!'),
+            ));
+        } else {
+            print('Failed to run code: ${response.reasonPhrase}');
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Failed to run star command.'),
+            ));
+        }
+    } catch (e) {
+        print('Error: $e');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Error running star command.'),
+        ));
+    }
+  }
+
+
+  Future<void> _runHeart() async {
+    try {
+        final response = await http.post(
+            Uri.parse('http://192.168.1.114:5000/run_heart'),
+        );
+
+        if (response.statusCode == 200) {
+            final data = json.decode(response.body);
+            print('Output: ${data['output']}');
+            print('Error: ${data['error']}');
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Heart command sent successfully!'),
+            ));
+        } else {
+            print('Failed to run code: ${response.reasonPhrase}');
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Failed to run heart command.'),
+            ));
+        }
+    } catch (e) {
+        print('Error: $e');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Error running heart command.'),
+        ));
+    }
+  }
+
+  Future<void> _runCloud() async {
+    try {
+        final response = await http.post(
+            Uri.parse('http://192.168.1.114:5000/run_cloud'),
+        );
+
+        if (response.statusCode == 200) {
+            final data = json.decode(response.body);
+            print('Output: ${data['output']}');
+            print('Error: ${data['error']}');
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Cloud command sent successfully!'),
+            ));
+        } else {
+            print('Failed to run code: ${response.reasonPhrase}');
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Failed to run cloud command.'),
+            ));
+        }
+    } catch (e) {
+        print('Error: $e');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Error running cloud command.'),
+        ));
+    }
+  }
+
+  Future<void> _stop() async {
+    final response = await http.post(
+      Uri.parse('http://192.168.1.114:5000/stop'), // 替换为你的本地IP地址
+    );
+
+    if (response.statusCode == 200) {
+      print('Process stopped successfully');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Process stopped successfully!'),
+      ));
+    } else {
+      print('Failed to stop process: ${response.reasonPhrase}');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Failed to stop process.'),
+      ));
+    }
+  }
+
+  void _showConfirmationDialog(
+      BuildContext context, String patternTitle, VoidCallback onConfirm) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Confirmation"),
+          content: Text("Are you sure you want to print '$patternTitle'?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                onConfirm();
+              },
+              child: Text("Confirm"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sprinkling Page'),
-        backgroundColor: Color(0xFF6F4E37), // 设置AppBar颜色为深咖啡色
+        title: Center(
+          child: Text(
+            'Choose Sprinkle Pattern',
+            style: TextStyle(color: Colors.black), // 设置文字颜色为黑色
+          ),
+        ),
+        backgroundColor: Colors.transparent, // 设置背景颜色为透明
+        elevation: 0, // 移除阴影
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: _toggleCircle,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF6F4E37), // 按钮颜色为深咖啡色
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0),
+          children: [
+            Expanded(
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 1,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                itemCount: 6, // 修改为6个项目
+                itemBuilder: (context, index) {
+                  String patternTitle;
+                  IconData patternIcon;
+                  switch (index) {
+                    case 0:
+                      patternTitle = 'Circle';
+                      patternIcon = Icons.circle_outlined;
+                      break;
+                    case 1:
+                      patternTitle = 'Square';
+                      patternIcon = Icons.crop_square;
+                      break;
+                    case 2:
+                      patternTitle = 'Triangle';
+                      patternIcon = Icons.change_history;
+                      break;
+                    case 3:
+                      patternTitle = 'Star';
+                      patternIcon = Icons.star_border_outlined;
+                      break;
+                    case 4:
+                      patternTitle = 'Heart';
+                      patternIcon = Icons.favorite_border;
+                      break;
+                    case 5:
+                      patternTitle = 'Cloud';
+                      patternIcon = Icons.cloud_queue;
+                      break;
+                    default:
+                      patternTitle = 'Pattern';
+                      patternIcon = Icons.help_outline;
+                  }
+
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white, // 背景颜色为白色
+                      borderRadius: BorderRadius.circular(20.0), // 边框圆角
+                      border: Border.all(color: Colors.black, width: 2), // 黑色加粗边框
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          patternTitle,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Icon(
+                          patternIcon,
+                          size: 80,
+                          color: Colors.grey[700], // 设置图标颜色
+                        ),
+                        SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () {
+                            _showConfirmationDialog(context, patternTitle, () {
+                              if (index == 0) {
+                                _runCircle();
+                              } else if(index==1){
+                                _runSquare();
+                              }else if(index==2){
+                                _runTriangle();
+                              }else if(index==3){
+                                _runStar();
+                              }else if(index==4){
+                                _runHeart();
+                              }else if(index==5){
+                                _runCloud();
+                              }else{
+                                _toggleCircle();
+                              }
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFFD5CEA3), // 按钮颜色
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10), // 按钮变小
+                            elevation: 10,
+                            shadowColor: Colors.black.withOpacity(0.5),
+                          ),
+                          child: Text(
+                            'Start',
+                            style: TextStyle(
+                                color: Colors.white, fontSize: 16), // 按钮文字稍微小一点
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _stop,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red, // 设置按钮颜色为红色
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                 elevation: 10,
                 shadowColor: Colors.black.withOpacity(0.5),
               ),
               child: Text(
-                'Print Circle',
+                'Stop',
                 style: TextStyle(color: Colors.white, fontSize: 18),
               ),
             ),
-            SizedBox(height: 30),
-            if (_showCircle)
-              AnimatedContainer(
-                duration: Duration(seconds: 1),
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    colors: [Color(0xFF6F4E37), Color(0xFFD7CCC8)],
-                    center: Alignment(-0.3, -0.5),
-                    radius: 1.0,
-                  ),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      spreadRadius: 3,
-                      blurRadius: 8,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
-              ),
           ],
         ),
       ),
