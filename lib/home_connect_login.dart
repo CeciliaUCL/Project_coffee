@@ -19,13 +19,13 @@ class _HomeConnectLoginState extends State<HomeConnectLogin> {
         title: Text('Home Connect Authentication'),
       ),
       body: WebView(
-        initialUrl: 'https://simulator.home-connect.com/security/oauth/authorize?response_type=code&client_id=2834200440E227B1C1DAF6687F0D3E4B56AEBAAB281F02D37B3266CB4BE6BB3E&redirect_uri=https://webhook.site/c1da6b5d-d004-450a-92dd-5070ec5a02b8&scope=IdentifyAppliance%20Monitor%20Control',
+        initialUrl: 'https://simulator.home-connect.com/security/oauth/authorize?response_type=code&client_id=2834200440E227B1C1DAF6687F0D3E4B56AEBAAB281F02D37B3266CB4BE6BB3E&scope=IdentifyAppliance%20Monitor%20Control',
         javascriptMode: JavascriptMode.unrestricted,
         onWebViewCreated: (WebViewController webViewController) {
           _webViewController = webViewController;
         },
         navigationDelegate: (NavigationRequest request) async {
-          if (request.url.startsWith('https://webhook.site/c1da6b5d-d004-450a-92dd-5070ec5a02b8')) {
+          if (request.url.contains('code=')) {
             final Uri uri = Uri.parse(request.url);
             final String? code = uri.queryParameters['code'];
             if (code != null) {
@@ -43,7 +43,7 @@ class _HomeConnectLoginState extends State<HomeConnectLogin> {
   Future<void> _exchangeCodeForToken(String code) async {
     final response = await http.post(
       Uri.parse('http://10.0.2.2:5000/token'),
-      body: {'code': code, 'redirect_uri': 'https://webhook.site/c1da6b5d-d004-450a-92dd-5070ec5a02b8'},
+      body: {'code': code},
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
     );
     if (response.statusCode == 200) {
