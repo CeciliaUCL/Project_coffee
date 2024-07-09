@@ -2,7 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:async';
+import 'device/device_control.dart';
 import 'home_connect_login.dart';
+import 'my_device_page.dart'; // 确保导入MyDevicePage
+
+class Device {
+  final String name;
+  final String brand;
+  final bool connected;
+  String get state => connected ? 'ON' : 'OFF';
+
+  Device({required this.name, required this.brand, required this.connected});
+
+  factory Device.fromJson(Map<String, dynamic> json) {
+    return Device(
+      name: json['name'] ?? 'Unknown',
+      brand: json['brand'] ?? 'Unknown',
+      connected: json['connected'] ?? false,
+    );
+  }
+}
 
 class DeviceList extends StatefulWidget {
   @override
@@ -12,12 +32,28 @@ class DeviceList extends StatefulWidget {
 class _DeviceListState extends State<DeviceList> {
   bool isConnected = false;
   String userName = 'User';
-  List<String> devices = [];
+  List<Device> devices = [];
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     checkAuthorization();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+      if (isConnected) {
+        fetchDevices();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   Future<void> checkAuthorization() async {
@@ -39,8 +75,8 @@ class _DeviceListState extends State<DeviceList> {
       if (response.statusCode == 200) {
         setState(() {
           isConnected = true;
-          userName = 'Yating'; // 替换为实际获取的用户名
-          fetchDevices(storedToken);
+          userName = 'Yating';
+          fetchDevices();
         });
       } else {
         setState(() {
@@ -50,7 +86,17 @@ class _DeviceListState extends State<DeviceList> {
     }
   }
 
-  Future<void> fetchDevices(String accessToken) async {
+  Future<void> fetchDevices() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? accessToken = prefs.getString('accessToken');
+
+    if (accessToken == null) {
+      setState(() {
+        isConnected = false;
+      });
+      return;
+    }
+
     final response = await http.get(
       Uri.parse('http://10.0.2.2:5000/get_devices'),
       headers: <String, String>{
@@ -60,9 +106,9 @@ class _DeviceListState extends State<DeviceList> {
 
     if (response.statusCode == 200) {
       List<dynamic> devicesJson = jsonDecode(response.body)['data']['homeappliances'];
-      List<String> devicesList = devicesJson.map((device) => device['name'].toString()).toList();
+      List<Device> devicesList = devicesJson.map((device) => Device.fromJson(device)).toList();
       setState(() {
-        devices = devicesList;
+        devices = devicesList.where((device) => device.name.contains('Coffee')).toList();
       });
     } else {
       print('Failed to fetch devices');
@@ -76,9 +122,10 @@ class _DeviceListState extends State<DeviceList> {
     );
 
     if (result == true) {
-      checkAuthorization();
+      setState(() {
+        checkAuthorization();
+      });
     } else {
-      // 用户点击取消按钮后的处理逻辑，例如显示提示信息
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Authorization cancelled by user'),
       ));
@@ -96,49 +143,68 @@ class _DeviceListState extends State<DeviceList> {
   }
 
   Widget _buildConnectedView() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Hello, $userName!',
-              style: TextStyle(fontSize: 24),
-            ),
-          ),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 1,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
         ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: devices.length,
-            itemBuilder: (context, index) {
-              return _buildDeviceTile(devices[index], 'SIEMENS');
-            },
-          ),
-        ),
-      ],
+        itemCount: devices.length,
+        itemBuilder: (context, index) {
+          return _buildDeviceTile(devices[index]);
+        },
+      ),
     );
   }
 
-  Widget _buildDeviceTile(String deviceName, String brand) {
-    return ListTile(
-      leading: Icon(Icons.coffee_maker),
-      title: Text(deviceName),
-      subtitle: Text(brand),
-      trailing: Column(
+  Widget _buildDeviceTile(Device device) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          TextButton(
-            onPressed: () {
-              // 实现设备开启逻辑
-            },
-            child: Text('Open'),
+          Icon(Icons.coffee_maker, size: 48),
+          SizedBox(height: 8),
+          Text(device.name, style: TextStyle(fontSize: 18), textAlign: TextAlign.center),
+          Text(device.brand, style: TextStyle(fontSize: 14), textAlign: TextAlign.center),
+          SizedBox(height: 8),
+          Text('State: ${device.state}', style: TextStyle(fontSize: 14)),
+          Spacer(),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                print("Open button pressed for ${device.name}");
+                // 实现设备开启逻辑
+              },
+              child: Text('Open'),
+            ),
           ),
-          TextButton(
-            onPressed: () {
-              // 实现设备演示逻辑
-            },
-            child: Text('Control'),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                print("Control button pressed for ${device.name}");
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyDevicePage()),
+                ).then((_) {
+                  print("Returned from MyDevicePage");
+                  setState(() {
+                    checkAuthorization();
+                  });
+                });
+              },
+              child: Text('Control'),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: Theme.of(context).primaryColor,
+              ),
+            ),
           ),
         ],
       ),
