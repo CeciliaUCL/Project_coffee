@@ -5,7 +5,6 @@ import 'categories_page.dart';
 import 'liquid_volume_page.dart';
 import 'strength_page.dart';
 import 'dart:convert';
-import 'package:uri/uri.dart'; // 添加这个包来处理URL编码
 
 class MyDevicePage extends StatefulWidget {
   @override
@@ -18,8 +17,7 @@ class _MyDevicePageState extends State<MyDevicePage> {
   String _selectedCategory = 'Coffee';
 
   // 更新这里的Flask服务器URL
-  final String flaskServerUrl =
-      'http://10.0.2.2:5000/start_coffee_machine'; // 如果使用Android模拟器
+  final String flaskServerUrl = 'http://10.0.2.2:5000/start_coffee_machine'; // 如果使用Android模拟器
 
   @override
   void initState() {

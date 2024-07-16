@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'config.dart'; // 导入配置文件
 
 class SprinklePage extends StatefulWidget {
   @override
@@ -19,7 +20,7 @@ class _SprinklePageState extends State<SprinklePage> {
   Future<void> _runCircle() async {
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.114:5000/run_circle'),
+        Uri.parse('$baseUrl/run_circle'), // 使用 baseUrl
       );
 
       if (response.statusCode == 200) {
@@ -42,147 +43,145 @@ class _SprinklePageState extends State<SprinklePage> {
       ));
     }
   }
-  
 
   Future<void> _runSquare() async {
     try {
-        final response = await http.post(
-            Uri.parse('http://192.168.1.114:5000/run_square'),
-        );
+      final response = await http.post(
+        Uri.parse('$baseUrl/run_square'), // 使用 baseUrl
+      );
 
-        if (response.statusCode == 200) {
-            final data = json.decode(response.body);
-            print('Output: ${data['output']}');
-            print('Error: ${data['error']}');
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Square command sent successfully!'),
-            ));
-        } else {
-            print('Failed to run code: ${response.reasonPhrase}');
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Failed to run square command.'),
-            ));
-        }
-    } catch (e) {
-        print('Error: $e');
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print('Output: ${data['output']}');
+        print('Error: ${data['error']}');
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Error running square command.'),
+          content: Text('Square command sent successfully!'),
         ));
+      } else {
+        print('Failed to run code: ${response.reasonPhrase}');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Failed to run square command.'),
+        ));
+      }
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Error running square command.'),
+      ));
     }
   }
 
-Future<void> _runTriangle() async {
+  Future<void> _runTriangle() async {
     try {
-        final response = await http.post(
-            Uri.parse('http://192.168.1.114:5000/run_triangle'),
-        );
+      final response = await http.post(
+        Uri.parse('$baseUrl/run_triangle'), // 使用 baseUrl
+      );
 
-        if (response.statusCode == 200) {
-            final data = json.decode(response.body);
-            print('Output: ${data['output']}');
-            print('Error: ${data['error']}');
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Triangle command sent successfully!'),
-            ));
-        } else {
-            print('Failed to run code: ${response.reasonPhrase}');
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Failed to run triangle command.'),
-            ));
-        }
-    } catch (e) {
-        print('Error: $e');
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print('Output: ${data['output']}');
+        print('Error: ${data['error']}');
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Error running square command.'),
+          content: Text('Triangle command sent successfully!'),
         ));
+      } else {
+        print('Failed to run code: ${response.reasonPhrase}');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Failed to run triangle command.'),
+        ));
+      }
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Error running triangle command.'),
+      ));
     }
   }
 
   Future<void> _runStar() async {
     try {
-        final response = await http.post(
-            Uri.parse('http://192.168.1.114:5000/run_star'),
-        );
+      final response = await http.post(
+        Uri.parse('$baseUrl/run_star'), // 使用 baseUrl
+      );
 
-        if (response.statusCode == 200) {
-            final data = json.decode(response.body);
-            print('Output: ${data['output']}');
-            print('Error: ${data['error']}');
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Star command sent successfully!'),
-            ));
-        } else {
-            print('Failed to run code: ${response.reasonPhrase}');
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Failed to run star command.'),
-            ));
-        }
-    } catch (e) {
-        print('Error: $e');
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print('Output: ${data['output']}');
+        print('Error: ${data['error']}');
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Error running star command.'),
+          content: Text('Star command sent successfully!'),
         ));
+      } else {
+        print('Failed to run code: ${response.reasonPhrase}');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Failed to run star command.'),
+        ));
+      }
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Error running star command.'),
+      ));
     }
   }
 
-
   Future<void> _runHeart() async {
     try {
-        final response = await http.post(
-            Uri.parse('http://192.168.1.114:5000/run_heart'),
-        );
+      final response = await http.post(
+        Uri.parse('$baseUrl/run_heart'), // 使用 baseUrl
+      );
 
-        if (response.statusCode == 200) {
-            final data = json.decode(response.body);
-            print('Output: ${data['output']}');
-            print('Error: ${data['error']}');
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Heart command sent successfully!'),
-            ));
-        } else {
-            print('Failed to run code: ${response.reasonPhrase}');
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Failed to run heart command.'),
-            ));
-        }
-    } catch (e) {
-        print('Error: $e');
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print('Output: ${data['output']}');
+        print('Error: ${data['error']}');
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Error running heart command.'),
+          content: Text('Heart command sent successfully!'),
         ));
+      } else {
+        print('Failed to run code: ${response.reasonPhrase}');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Failed to run heart command.'),
+        ));
+      }
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Error running heart command.'),
+      ));
     }
   }
 
   Future<void> _runCloud() async {
     try {
-        final response = await http.post(
-            Uri.parse('http://192.168.1.114:5000/run_cloud'),
-        );
+      final response = await http.post(
+        Uri.parse('$baseUrl/run_cloud'), // 使用 baseUrl
+      );
 
-        if (response.statusCode == 200) {
-            final data = json.decode(response.body);
-            print('Output: ${data['output']}');
-            print('Error: ${data['error']}');
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Cloud command sent successfully!'),
-            ));
-        } else {
-            print('Failed to run code: ${response.reasonPhrase}');
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Failed to run cloud command.'),
-            ));
-        }
-    } catch (e) {
-        print('Error: $e');
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print('Output: ${data['output']}');
+        print('Error: ${data['error']}');
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Error running cloud command.'),
+          content: Text('Cloud command sent successfully!'),
         ));
+      } else {
+        print('Failed to run code: ${response.reasonPhrase}');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Failed to run cloud command.'),
+        ));
+      }
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Error running cloud command.'),
+      ));
     }
   }
 
   Future<void> _stop() async {
     final response = await http.post(
-      Uri.parse('http://192.168.1.114:5000/stop'), // 替换为你的本地IP地址
+      Uri.parse('$baseUrl/stop'), // 使用 baseUrl
     );
 
     if (response.statusCode == 200) {
@@ -373,7 +372,3 @@ Future<void> _runTriangle() async {
     );
   }
 }
-
-void main() => runApp(MaterialApp(
-  home: SprinklePage(),
-));

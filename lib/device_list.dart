@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:async';
-import 'device/device_control.dart';
+import 'device/my_device.dart';
 import 'home_connect_login.dart';
-import 'my_device_page.dart'; // 确保导入MyDevicePage
 
 class Device {
   final String name;
@@ -33,27 +31,11 @@ class _DeviceListState extends State<DeviceList> {
   bool isConnected = false;
   String userName = 'User';
   List<Device> devices = [];
-  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     checkAuthorization();
-    _startTimer();
-  }
-
-  void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 5), (timer) {
-      if (isConnected) {
-        fetchDevices();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
   }
 
   Future<void> checkAuthorization() async {
@@ -115,6 +97,35 @@ class _DeviceListState extends State<DeviceList> {
     }
   }
 
+  Future<void> powerOnSimulator() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? accessToken = prefs.getString('accessToken');
+
+    if (accessToken == null) {
+      setState(() {
+        isConnected = false;
+      });
+      return;
+    }
+
+    final response = await http.post(
+      Uri.parse('http://10.0.2.2:5000/power_on'),
+      headers: <String, String>{
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Simulator powered on successfully')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to power on simulator')),
+      );
+    }
+  }
+
   void navigateToLogin() async {
     final result = await Navigator.push(
       context,
@@ -143,70 +154,89 @@ class _DeviceListState extends State<DeviceList> {
   }
 
   Widget _buildConnectedView() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 1,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-        ),
-        itemCount: devices.length,
-        itemBuilder: (context, index) {
-          return _buildDeviceTile(devices[index]);
-        },
-      ),
+    return ListView.builder(
+      padding: EdgeInsets.all(8),
+      itemCount: devices.length,
+      itemBuilder: (context, index) {
+        return _buildDeviceTile(devices[index]);
+      },
     );
   }
 
   Widget _buildDeviceTile(Device device) {
     return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.coffee_maker, size: 48),
-          SizedBox(height: 8),
-          Text(device.name, style: TextStyle(fontSize: 18), textAlign: TextAlign.center),
-          Text(device.brand, style: TextStyle(fontSize: 14), textAlign: TextAlign.center),
-          SizedBox(height: 8),
-          Text('State: ${device.state}', style: TextStyle(fontSize: 14)),
-          Spacer(),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                print("Open button pressed for ${device.name}");
-                // 实现设备开启逻辑
-              },
-              child: Text('Open'),
+      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.coffee_maker, size: 24),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        device.name,
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        device.brand,
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                print("Control button pressed for ${device.name}");
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => MyDevicePage()),
-                ).then((_) {
-                  print("Returned from MyDevicePage");
-                  setState(() {
-                    checkAuthorization();
-                  });
-                });
-              },
-              child: Text('Control'),
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Theme.of(context).primaryColor,
-              ),
+            SizedBox(height: 8),
+            Text('State: ${device.state}', style: TextStyle(fontSize: 14)),
+            SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      powerOnSimulator();
+                    },
+                    child: Text('Open'),
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      print("Control button pressed for ${device.name}");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyDevicePage()),
+                      ).then((_) {
+                        print("Returned from MyDevicePage");
+                        setState(() {
+                          checkAuthorization();
+                        });
+                      });
+                    },
+                    child: Text('Control'),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Theme.of(context).primaryColor,
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -11,6 +11,7 @@ class HomeConnectLogin extends StatefulWidget {
 
 class _HomeConnectLoginState extends State<HomeConnectLogin> {
   late WebViewController _webViewController;
+  bool isLoading = true;
 
   @override
   Widget build(BuildContext context) {
@@ -18,28 +19,45 @@ class _HomeConnectLoginState extends State<HomeConnectLogin> {
       appBar: AppBar(
         title: Text('Home Connect Authentication'),
       ),
-      body: WebView(
-        initialUrl: 'https://simulator.home-connect.com/security/oauth/authorize?response_type=code&client_id=2834200440E227B1C1DAF6687F0D3E4B56AEBAAB281F02D37B3266CB4BE6BB3E&redirect_uri=https://webhook.site/c1da6b5d-d004-450a-92dd-5070ec5a02b8&scope=IdentifyAppliance%20Monitor%20Control',
-        javascriptMode: JavascriptMode.unrestricted,
-        onWebViewCreated: (WebViewController webViewController) {
-          _webViewController = webViewController;
-        },
-        navigationDelegate: (NavigationRequest request) async {
-          final Uri uri = Uri.parse(request.url);
-          final String? code = uri.queryParameters['code'];
-          final String? error = uri.queryParameters['error'];
+      body: Stack(
+        children: [
+          WebView(
+            initialUrl: 'https://simulator.home-connect.com/security/oauth/authorize?response_type=code&client_id=80840A20EDD4AC02F079C0B7493FB2BC6BCC7862D4BBB13D9688894A3438D983&redirect_uri=https://webhook.site/393b00e2-e865-4b69-a460-cff142b5937d&scope=IdentifyAppliance%20Monitor%20Control',
+            javascriptMode: JavascriptMode.unrestricted,
+            onWebViewCreated: (WebViewController webViewController) {
+              _webViewController = webViewController;
+            },
+            navigationDelegate: (NavigationRequest request) async {
+              final Uri uri = Uri.parse(request.url);
+              final String? code = uri.queryParameters['code'];
+              final String? error = uri.queryParameters['error'];
 
-          if (code != null) {
-            await _exchangeCodeForToken(code);
-            Navigator.pop(context, true);
-            return NavigationDecision.prevent;
-          } else if (error != null) {
-            Navigator.pop(context, false);
-            return NavigationDecision.prevent;
-          }
+              if (code != null) {
+                await _exchangeCodeForToken(code);
+                Navigator.pop(context, true);
+                return NavigationDecision.prevent;
+              } else if (error != null) {
+                Navigator.pop(context, false);
+                return NavigationDecision.prevent;
+              }
 
-          return NavigationDecision.navigate;
-        },
+              return NavigationDecision.navigate;
+            },
+            onPageStarted: (String url) {
+              setState(() {
+                isLoading = true;
+              });
+            },
+            onPageFinished: (String url) {
+              setState(() {
+                isLoading = false;
+              });
+            },
+          ),
+          isLoading
+              ? Center(child: CircularProgressIndicator())
+              : Stack(),
+        ],
       ),
     );
   }
