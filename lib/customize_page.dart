@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
@@ -16,131 +15,86 @@ class _CustomizePageState extends State<CustomizePage> {
   // 使用Socket发送数据
   Future<void> sendInputToServer(String text) async {
     try {
-      // 使用10.0.2.2连接到主机的localhost
       final socket = await Socket.connect(socketUrl.split('//')[1].split(':')[0], int.parse(socketUrl.split(':')[2]));
-      print('Connected to server');
-      
-      // 发送数据
       socket.write(text);
-      print('Data sent to server: $text');
-      
-      // 关闭连接
       await socket.close();
     } catch (e) {
       print("Failed to send data: $e");
     }
   }
-  
-  // 发送启动请求到后端
-Future<void> _startHardwareControl() async {
-  try {
-    final response = await http.post(
-      Uri.parse('$baseUrl/run_program'), // 使用 baseUrl
-    );
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      print('Message: ${data['message']}');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Program started successfully!'),
-      ));
-      setState(() {
-        isHardwareRunning = true;
-      });
-    } else {
-      print('Failed to start program: ${response.reasonPhrase}');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Failed to start program.'),
-      ));
+  // 发送启动请求到后端
+  Future<void> _startHardwareControl() async {
+    try {
+      final response = await http.post(Uri.parse('$baseUrl/run_program'));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Program started successfully!')));
+        setState(() {
+          isHardwareRunning = true;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to start program.')));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error starting program.')));
     }
-  } catch (e) {
-    print('Error: $e');
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('Error starting program.'),
-    ));
   }
-}
+
   // 发送停止请求到后端
   Future<void> _stopHardwareControl() async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/stop_hardware_control'),
-      );
+      final response = await http.post(Uri.parse('$baseUrl/stop_hardware_control'));
       if (response.statusCode == 200) {
-        print('Hardware control stopped');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Program stopped successfully!'),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Program stopped successfully!')));
         setState(() {
           isHardwareRunning = false;
         });
       } else {
-        print('Failed to stop program: ${response.reasonPhrase}');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Failed to stop program.'),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to stop program.')));
       }
     } catch (e) {
-      print('Error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Error stopping program.'),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error stopping program.')));
     }
   }
 
-
+  // 控制方向的功能函数
   Future<void> _runForward() async {
-    if (isHardwareRunning) {
-      await sendInputToServer('w');
-    }
+    if (isHardwareRunning) await sendInputToServer('w');
   }
 
   Future<void> _runBackward() async {
-    if (isHardwareRunning) {
-      await sendInputToServer('s');
-    }
+    if (isHardwareRunning) await sendInputToServer('s');
   }
 
   Future<void> _runLeft() async {
-    if (isHardwareRunning) {
-      await sendInputToServer('a');
-    }
+    if (isHardwareRunning) await sendInputToServer('a');
   }
 
   Future<void> _runRight() async {
-    if (isHardwareRunning) {
-      await sendInputToServer('d');
-    }
+    if (isHardwareRunning) await sendInputToServer('d');
   }
 
   Future<void> _runUp() async {
-    if (isHardwareRunning) {
-      await sendInputToServer('q');
-    }
+    if (isHardwareRunning) await sendInputToServer('q');
   }
 
   Future<void> _runDown() async {
-    if (isHardwareRunning) {
-      await sendInputToServer('e');
-    }
+    if (isHardwareRunning) await sendInputToServer('e');
   }
 
+  // 放置颗粒的功能
   Future<void> _dropParticles() async {
     if (isHardwareRunning) {
       await sendInputToServer('x');
-      await Future.delayed(Duration(seconds: 1)); // 等待'x'字符被处理
+      await Future.delayed(Duration(seconds: 1));
       await _stopHardwareControl();
     }
   }
 
-  Future<void> _recognizeReflector() async {
-    // 实现识别反射器的功能
-    print('Recognize Reflector button pressed');
-  }
-
   @override
   void dispose() {
-    _dropParticles(); // 停止并释放资源
+    _dropParticles();
     super.dispose();
   }
 
@@ -148,13 +102,12 @@ Future<void> _startHardwareControl() async {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: Text(
-            'Customize Page',
-            style: TextStyle(color: Colors.white),
-          ),
+        centerTitle: true,  // 标题居中
+        title: Text(
+          'Customize Page',
+          style: TextStyle(color: Colors.black),
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
       ),
       body: Padding(
@@ -163,15 +116,6 @@ Future<void> _startHardwareControl() async {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
-                onPressed: _recognizeReflector,
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  backgroundColor: Color(0xFFD5CEA3),
-                ),
-                child: Text('Recognize Reflector', style: TextStyle(fontSize: 20, color: Colors.white)),
-              ),
-              SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -179,8 +123,11 @@ Future<void> _startHardwareControl() async {
                     child: ElevatedButton(
                       onPressed: isHardwareRunning ? null : _startHardwareControl,
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                         backgroundColor: isHardwareRunning ? Colors.grey : Color(0xFFD5CEA3),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
                       ),
                       child: Text('Start', style: TextStyle(fontSize: 20, color: Colors.white)),
                     ),
@@ -190,58 +137,29 @@ Future<void> _startHardwareControl() async {
                     child: ElevatedButton(
                       onPressed: isHardwareRunning ? _dropParticles : null,
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                         backgroundColor: isHardwareRunning ? Color(0xFFD5CEA3) : Colors.grey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
                       ),
                       child: Text('Drop', style: TextStyle(fontSize: 20, color: Colors.white)),
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: isHardwareRunning ? _runForward : null,
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.transparent,
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                ),
-                child: Icon(Icons.arrow_upward, size: 50, color: isHardwareRunning ? Colors.grey[800] : Colors.grey),
-              ),
+              SizedBox(height: 30),
+              _buildDirectionalButton(Icons.arrow_upward, _runForward, isHardwareRunning),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton(
-                    onPressed: isHardwareRunning ? _runLeft : null,
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent,
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                    ),
-                    child: Icon(Icons.arrow_back, size: 50, color: isHardwareRunning ? Colors.grey[800] : Colors.grey),
-                  ),
+                  _buildDirectionalButton(Icons.arrow_back, _runLeft, isHardwareRunning),
                   SizedBox(width: 20),
-                  ElevatedButton(
-                    onPressed: isHardwareRunning ? _runRight : null,
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.transparent,
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                    ),
-                    child: Icon(Icons.arrow_forward, size: 50, color: isHardwareRunning ? Colors.grey[800] : Colors.grey),
-                  ),
+                  _buildDirectionalButton(Icons.arrow_forward, _runRight, isHardwareRunning),
                 ],
               ),
-              ElevatedButton(
-                onPressed: isHardwareRunning ? _runBackward : null,
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.transparent,
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                ),
-                child: Icon(Icons.arrow_downward, size: 50, color: isHardwareRunning ? Colors.grey[800] : Colors.grey),
-              ),
-              SizedBox(height: 20),
+              _buildDirectionalButton(Icons.arrow_downward, _runBackward, isHardwareRunning),
+              SizedBox(height: 30),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -249,8 +167,11 @@ Future<void> _startHardwareControl() async {
                     child: ElevatedButton(
                       onPressed: isHardwareRunning ? _runUp : null,
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                         backgroundColor: isHardwareRunning ? Color(0xFFD5CEA3) : Colors.grey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
                       ),
                       child: Text('Up', style: TextStyle(fontSize: 20, color: Colors.white)),
                     ),
@@ -260,8 +181,11 @@ Future<void> _startHardwareControl() async {
                     child: ElevatedButton(
                       onPressed: isHardwareRunning ? _runDown : null,
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                         backgroundColor: isHardwareRunning ? Color(0xFFD5CEA3) : Colors.grey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
                       ),
                       child: Text('Down', style: TextStyle(fontSize: 20, color: Colors.white)),
                     ),
@@ -272,6 +196,18 @@ Future<void> _startHardwareControl() async {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDirectionalButton(IconData icon, VoidCallback onPressed, bool enabled) {
+    return ElevatedButton(
+      onPressed: enabled ? onPressed : null,
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
+        shadowColor: Colors.transparent,
+      ),
+      child: Icon(icon, size: 50, color: enabled ? Colors.grey[800] : Colors.grey),
     );
   }
 }

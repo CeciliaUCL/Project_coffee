@@ -152,32 +152,32 @@ class _FrotherPageState extends State<FrotherPage> {
     }
   }
 
-  Future<void> _runCloud() async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/run_cloud'), // 使用 baseUrl
-      );
+  // Future<void> _runCloud() async {
+  //   try {
+  //     final response = await http.post(
+  //       Uri.parse('$baseUrl/run_cloud'), // 使用 baseUrl
+  //     );
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        print('Output: ${data['output']}');
-        print('Error: ${data['error']}');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Cloud command sent successfully!'),
-        ));
-      } else {
-        print('Failed to run code: ${response.reasonPhrase}');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Failed to run cloud command.'),
-        ));
-      }
-    } catch (e) {
-      print('Error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Error running cloud command.'),
-      ));
-    }
-  }
+  //     if (response.statusCode == 200) {
+  //       final data = json.decode(response.body);
+  //       print('Output: ${data['output']}');
+  //       print('Error: ${data['error']}');
+  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //         content: Text('Cloud command sent successfully!'),
+  //       ));
+  //     } else {
+  //       print('Failed to run code: ${response.reasonPhrase}');
+  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //         content: Text('Failed to run cloud command.'),
+  //       ));
+  //     }
+  //   } catch (e) {
+  //     print('Error: $e');
+  //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //       content: Text('Error running cloud command.'),
+  //     ));
+  //   }
+  // }
 
   Future<void> _stop() async {
     final response = await http.post(
@@ -250,7 +250,7 @@ class _FrotherPageState extends State<FrotherPage> {
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
                 ),
-                itemCount: 6, // 修改为6个项目
+                itemCount: 5, // 修改为6个项目
                 itemBuilder: (context, index) {
                   String patternTitle;
                   IconData patternIcon;
@@ -274,10 +274,6 @@ class _FrotherPageState extends State<FrotherPage> {
                     case 4:
                       patternTitle = 'Heart';
                       patternIcon = Icons.favorite_border;
-                      break;
-                    case 5:
-                      patternTitle = 'Cloud';
-                      patternIcon = Icons.cloud_queue;
                       break;
                     default:
                       patternTitle = 'Pattern';
@@ -320,9 +316,7 @@ class _FrotherPageState extends State<FrotherPage> {
                                 _runStar();
                               } else if (index == 4) {
                                 _runHeart();
-                              } else if (index == 5) {
-                                _runCloud();
-                              } else {
+                              }  else {
                                 _toggleCircle();
                               }
                             });

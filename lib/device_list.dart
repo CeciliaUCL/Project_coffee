@@ -4,12 +4,14 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'device/my_device.dart';
 import 'home_connect_login.dart';
+import 'config.dart';
+import 'package:url_launcher/url_launcher.dart';  // Import url_launcher
 
 class Device {
   final String name;
   final String brand;
   final bool connected;
-  String get state => connected ? 'ON' : 'OFF';
+  String get state => connected ? 'Connected' : 'Not Connected';
 
   Device({required this.name, required this.brand, required this.connected});
 
@@ -48,7 +50,7 @@ class _DeviceListState extends State<DeviceList> {
       });
     } else {
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:5000/get_devices'),
+        Uri.parse('${BASE_URL}get_devices'),
         headers: <String, String>{
           'Authorization': 'Bearer $storedToken',
         },
@@ -80,7 +82,7 @@ class _DeviceListState extends State<DeviceList> {
     }
 
     final response = await http.get(
-      Uri.parse('http://10.0.2.2:5000/get_devices'),
+      Uri.parse('${BASE_URL}get_devices'),
       headers: <String, String>{
         'Authorization': 'Bearer $accessToken',
       },
@@ -94,35 +96,6 @@ class _DeviceListState extends State<DeviceList> {
       });
     } else {
       print('Failed to fetch devices');
-    }
-  }
-
-  Future<void> powerOnSimulator() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? accessToken = prefs.getString('accessToken');
-
-    if (accessToken == null) {
-      setState(() {
-        isConnected = false;
-      });
-      return;
-    }
-
-    final response = await http.post(
-      Uri.parse('http://10.0.2.2:5000/power_on'),
-      headers: <String, String>{
-        'Authorization': 'Bearer $accessToken',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Simulator powered on successfully')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to power on simulator')),
-      );
     }
   }
 
@@ -141,6 +114,11 @@ class _DeviceListState extends State<DeviceList> {
         content: Text('Authorization cancelled by user'),
       ));
     }
+  }
+
+  void redirectToSimulator() {
+    const url = 'https://developer.home-connect.com/simulator'; // Adjust the URL as needed
+    launchUrl(Uri.parse(url));
   }
 
   @override
@@ -201,34 +179,40 @@ class _DeviceListState extends State<DeviceList> {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {
-                      powerOnSimulator();
-                    },
-                    child: Text('Open'),
+                    onPressed: device.connected
+                        ? null  // 如果设备已连接（ON），禁用 Turn On 按钮
+                        : () {
+                            redirectToSimulator();
+                          },
+                    child: Text('Turn On'),
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 8),
+                      backgroundColor: device.connected ? Colors.grey : Theme.of(context).primaryColor,  // 背景颜色调整
+                      foregroundColor: Colors.white,  // 文字颜色调整为白色
                     ),
                   ),
                 ),
                 SizedBox(width: 8),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {
-                      print("Control button pressed for ${device.name}");
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MyDevicePage()),
-                      ).then((_) {
-                        print("Returned from MyDevicePage");
-                        setState(() {
-                          checkAuthorization();
-                        });
-                      });
-                    },
+                    onPressed: device.connected
+                        ? () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => MyDevicePage()),
+                            ).then((_) {
+                              setState(() {
+                                checkAuthorization();
+                              });
+                            });
+                          }
+                        : null,  // 如果设备未连接（OFF），禁用 Control 按钮
                     child: Text('Control'),
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
-                      backgroundColor: Theme.of(context).primaryColor,
+                      backgroundColor: device.connected
+                          ? Theme.of(context).primaryColor
+                          : Colors.grey,  // 当按钮禁用时显示灰色
                       padding: EdgeInsets.symmetric(vertical: 8),
                     ),
                   ),

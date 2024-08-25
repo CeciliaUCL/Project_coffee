@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'config.dart'; 
-import 'customize_page.dart'; 
+import 'config.dart';
+import 'customize_page.dart';
+import 'dart:math';
+import 'TrianglePage.dart';
+import 'SquarePage.dart';
+import 'HexagonPage.dart';
+import 'FlowerPage.dart';
 
 class SprinklePage extends StatefulWidget {
   @override
@@ -10,140 +15,10 @@ class SprinklePage extends StatefulWidget {
 }
 
 class _SprinklePageState extends State<SprinklePage> {
-  bool _showCircle = false;
-
-  void _toggleCircle() {
-    setState(() {
-      _showCircle = !_showCircle;
-    });
-  }
-
-  Future<void> _runCircle() async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/run_circle'), // 使用 baseUrl
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        print('Output: ${data['output']}');
-        print('Error: ${data['error']}');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Circle command sent successfully!'),
-        ));
-      } else {
-        print('Failed to run code: ${response.reasonPhrase}');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Failed to run circle command.'),
-        ));
-      }
-    } catch (e) {
-      print('Error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Error running circle command.'),
-      ));
-    }
-  }
-
-  Future<void> _runSquare() async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/run_square'), // 使用 baseUrl
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        print('Output: ${data['output']}');
-        print('Error: ${data['error']}');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Square command sent successfully!'),
-        ));
-      } else {
-        print('Failed to run code: ${response.reasonPhrase}');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Failed to run square command.'),
-        ));
-      }
-    } catch (e) {
-      print('Error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Error running square command.'),
-      ));
-    }
-  }
-
-  Future<void> _runTriangle() async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/run_triangle'), // 使用 baseUrl
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        print('Output: ${data['output']}');
-        print('Error: ${data['error']}');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Triangle command sent successfully!'),
-        ));
-      } else {
-        print('Failed to run code: ${response.reasonPhrase}');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Failed to run triangle command.'),
-        ));
-      }
-    } catch (e) {
-      print('Error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Error running triangle command.'),
-      ));
-    }
-  }
-
-  Future<void> _runStar() async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/run_star'), // 使用 baseUrl
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        print('Output: ${data['output']}');
-        print('Error: ${data['error']}');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Star command sent successfully!'),
-        ));
-      } else {
-        print('Failed to run code: ${response.reasonPhrase}');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Failed to run star command.'),
-        ));
-      }
-    } catch (e) {
-      print('Error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Error running star command.'),
-      ));
-    }
-  }
-
   Future<void> _stop() async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/stop'), // 使用 baseUrl
-    );
-
-    if (response.statusCode == 200) {
-      print('Process stopped successfully');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Process stopped successfully!'),
-      ));
-    } else {
-      print('Failed to stop process: ${response.reasonPhrase}');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Failed to stop process.'),
-      ));
-    }
+    // 停止操作的实现逻辑
   }
-
+  
   void _showConfirmationDialog(
       BuildContext context, String patternTitle, VoidCallback onConfirm) {
     showDialog(
@@ -179,6 +54,28 @@ class _SprinklePageState extends State<SprinklePage> {
     );
   }
 
+  void _navigateToTrianglePage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => TrianglePage()),
+    );
+  }
+ void _navigateToSquarePage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SquarePage()),
+    );
+  } void _navigateToHexagonPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => HexagonPage()),
+    );
+  } void _navigateToFlowerPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => FlowerPage()),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -186,11 +83,11 @@ class _SprinklePageState extends State<SprinklePage> {
         title: Center(
           child: Text(
             'Choose Sprinkle Pattern',
-            style: TextStyle(color: Colors.black), // 设置文字颜色为黑色
+            style: TextStyle(color: Colors.black),
           ),
         ),
-        backgroundColor: Colors.transparent, // 设置背景颜色为透明
-        elevation: 0, // 移除阴影
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -204,37 +101,49 @@ class _SprinklePageState extends State<SprinklePage> {
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
                 ),
-                itemCount: 4, // 修改为4个项目
+                itemCount: 4,
                 itemBuilder: (context, index) {
                   String patternTitle;
-                  IconData patternIcon;
+                  Widget patternIcon;
                   switch (index) {
                     case 0:
-                      patternTitle = 'Circle';
-                      patternIcon = Icons.circle_outlined;
+                      patternTitle = 'Triangle';
+                      patternIcon = CustomPaint(
+                        size: Size(50, 50), // 缩小图像尺寸
+                        painter: TriangleVerticesPainter(),
+                      );
                       break;
                     case 1:
                       patternTitle = 'Square';
-                      patternIcon = Icons.crop_square;
+                      patternIcon = CustomPaint(
+                        size: Size(50, 50), // 缩小图像尺寸
+                        painter: SquareVerticesPainter(),
+                      );
                       break;
                     case 2:
-                      patternTitle = 'Triangle';
-                      patternIcon = Icons.change_history;
+                      patternTitle = 'Hexagon';
+                      patternIcon = CustomPaint(
+                        size: Size(50, 50), // 缩小图像尺寸
+                        painter: HexagonVerticesPainter(),
+                      );
                       break;
                     case 3:
                       patternTitle = 'Star';
-                      patternIcon = Icons.star_border_outlined;
+                       patternIcon = CustomPaint(
+                        size: Size(50, 50), // 缩小图像尺寸
+                        painter: FlowerVerticesPainter(),
+                      );
                       break;
                     default:
                       patternTitle = 'Pattern';
-                      patternIcon = Icons.help_outline;
+                      patternIcon = Icon(Icons.help_outline, size: 50, color: Colors.grey[700]); // 缩小图标
                   }
 
                   return Container(
                     decoration: BoxDecoration(
-                      color: Colors.white, // 背景颜色为白色
-                      borderRadius: BorderRadius.circular(20.0), // 边框圆角
-                      border: Border.all(color: Colors.black, width: 2), // 黑色加粗边框
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20.0),
+                      border: Border.all(color: Colors.black, width: 2),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -247,40 +156,34 @@ class _SprinklePageState extends State<SprinklePage> {
                           ),
                         ),
                         SizedBox(height: 10),
-                        Icon(
-                          patternIcon,
-                          size: 80,
-                          color: Colors.grey[700], // 设置图标颜色
-                        ),
+                        patternIcon,
                         SizedBox(height: 10),
                         ElevatedButton(
                           onPressed: () {
                             _showConfirmationDialog(context, patternTitle, () {
                               if (index == 0) {
-                                _runCircle();
+                                _navigateToTrianglePage();
                               } else if (index == 1) {
-                                _runSquare();
+                                _navigateToSquarePage();
                               } else if (index == 2) {
-                                _runTriangle();
+                                _navigateToHexagonPage();
                               } else if (index == 3) {
-                                _runStar();
-                              } else {
-                                _toggleCircle();
+                                _navigateToFlowerPage();
                               }
                             });
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFD5CEA3), // 按钮颜色
+                            backgroundColor: Color(0xFFD5CEA3),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20.0),
                             ),
-                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10), // 按钮变小
+                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                             elevation: 10,
                             shadowColor: Colors.black.withOpacity(0.5),
                           ),
                           child: Text(
                             'Start',
-                            style: TextStyle(color: Colors.white, fontSize: 16), // 按钮文字稍微小一点
+                            style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
                         ),
                       ],
@@ -297,7 +200,7 @@ class _SprinklePageState extends State<SprinklePage> {
                   child: ElevatedButton(
                     onPressed: _navigateToCustomizePage,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange, // 设置按钮颜色为橙色
+                      backgroundColor: Colors.orange,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
@@ -316,7 +219,7 @@ class _SprinklePageState extends State<SprinklePage> {
                   child: ElevatedButton(
                     onPressed: _stop,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red, // 设置按钮颜色为红色
+                      backgroundColor: Colors.red,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
@@ -338,3 +241,119 @@ class _SprinklePageState extends State<SprinklePage> {
     );
   }
 }
+
+class TriangleVerticesPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.grey[700]!
+      ..strokeWidth = 10
+      ..style = PaintingStyle.fill;
+
+    final points = [
+      Offset(size.width / 2, 0),
+      Offset(size.width, size.height),
+      Offset(0, size.height),
+    ];
+
+    for (var point in points) {
+      canvas.drawCircle(point, 3, paint); // 缩小点的大小
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
+  }
+}
+
+class SquareVerticesPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.grey[700]!
+      ..strokeWidth = 10
+      ..style = PaintingStyle.fill;
+
+    final points = [
+      Offset(0, 0),
+      Offset(size.width, 0),
+      Offset(0, size.height),
+      Offset(size.width, size.height),
+    ];
+
+    for (var point in points) {
+      canvas.drawCircle(point, 3, paint); // 缩小点的大小
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
+  }
+}
+
+class HexagonVerticesPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.grey[700]!
+      ..strokeWidth = 10
+      ..style = PaintingStyle.fill;
+
+    final points = [
+      Offset(size.width * 0.5, 0),
+      Offset(size.width, size.height * 0.25),
+      Offset(size.width, size.height * 0.75),
+      Offset(size.width * 0.5, size.height),
+      Offset(0, size.height * 0.75),
+      Offset(0, size.height * 0.25),
+    ];
+
+    for (var point in points) {
+      canvas.drawCircle(point, 3, paint); // 缩小点的大小
+    }
+  }
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
+  }
+}
+
+
+class FlowerVerticesPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.grey[700]!
+      ..strokeWidth = 10
+      ..style = PaintingStyle.fill;
+
+    // Calculate the points of a regular pentagon
+    double cx = size.width / 2;
+    double cy = size.height / 2;
+    double radius = size.width / 2;
+
+    List<Offset> points = [];
+    for (int i = 0; i < 5; i++) {
+      double angle = 2 * pi * i / 5 - pi / 2;
+      double x = cx + radius * cos(angle);
+      double y = cy + radius * sin(angle);
+      points.add(Offset(x, y));
+    }
+
+    // Draw the pentagon vertices
+    for (var point in points) {
+      canvas.drawCircle(point, 3, paint); // Small circles for vertices
+    }
+
+    // Draw the center point
+    canvas.drawCircle(Offset(cx, cy), 3, paint); // Center point
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
+  }
+}
+
