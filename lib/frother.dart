@@ -12,6 +12,7 @@ class FrotherPage extends StatefulWidget {
 class _FrotherPageState extends State<FrotherPage> {
   bool _showCircle = false;
   String? _selectedPattern;
+  bool _isPatternRunning = false; // New state to track if a pattern is running
 
   void _toggleCircle() {
     setState(() {
@@ -22,6 +23,7 @@ class _FrotherPageState extends State<FrotherPage> {
   Future<void> _runCircle() async {
     setState(() {
       _selectedPattern = 'Circle';
+      _isPatternRunning = true; // Set pattern as running
     });
     try {
       final response = await http.post(
@@ -40,18 +42,27 @@ class _FrotherPageState extends State<FrotherPage> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Failed to run circle command.'),
         ));
+        setState(() {
+          _isPatternRunning = false; // Reset if failed
+          _selectedPattern = null;
+        });
       }
     } catch (e) {
       print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Error running circle command.'),
       ));
+      setState(() {
+        _isPatternRunning = false; // Reset if error
+        _selectedPattern = null;
+      });
     }
   }
 
   Future<void> _runSquare() async {
     setState(() {
       _selectedPattern = 'Square';
+      _isPatternRunning = true; // Set pattern as running
     });
     try {
       final response = await http.post(
@@ -70,18 +81,27 @@ class _FrotherPageState extends State<FrotherPage> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Failed to run square command.'),
         ));
+        setState(() {
+          _isPatternRunning = false; // Reset if failed
+          _selectedPattern = null;
+        });
       }
     } catch (e) {
       print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Error running square command.'),
       ));
+      setState(() {
+        _isPatternRunning = false; // Reset if error
+        _selectedPattern = null;
+      });
     }
   }
 
   Future<void> _runTriangle() async {
     setState(() {
       _selectedPattern = 'Triangle';
+      _isPatternRunning = true; // Set pattern as running
     });
     try {
       final response = await http.post(
@@ -100,18 +120,27 @@ class _FrotherPageState extends State<FrotherPage> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Failed to run triangle command.'),
         ));
+        setState(() {
+          _isPatternRunning = false; // Reset if failed
+          _selectedPattern = null;
+        });
       }
     } catch (e) {
       print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Error running triangle command.'),
       ));
+      setState(() {
+        _isPatternRunning = false; // Reset if error
+        _selectedPattern = null;
+      });
     }
   }
 
   Future<void> _runStar() async {
     setState(() {
       _selectedPattern = 'Star';
+      _isPatternRunning = true; // Set pattern as running
     });
     try {
       final response = await http.post(
@@ -130,12 +159,20 @@ class _FrotherPageState extends State<FrotherPage> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Failed to run star command.'),
         ));
+        setState(() {
+          _isPatternRunning = false; // Reset if failed
+          _selectedPattern = null;
+        });
       }
     } catch (e) {
       print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Error running star command.'),
       ));
+      setState(() {
+        _isPatternRunning = false; // Reset if error
+        _selectedPattern = null;
+      });
     }
   }
 
@@ -155,16 +192,25 @@ class _FrotherPageState extends State<FrotherPage> {
         content: Text('Failed to stop process.'),
       ));
     }
+    setState(() {
+      _isPatternRunning = false; // Reset pattern running state
+      _selectedPattern = null;
+    });
   }
 
   void _navigateToAdjustmentPage() {
-    if (_selectedPattern != null) {
+    if (_isPatternRunning && _selectedPattern != null) {
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => AdjustmentPage(patternTitle: _selectedPattern!),
         ),
       );
+    } else {
+      // Show a message if no pattern has been started
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('You need to start a pattern frothing first'),
+      ));
     }
   }
 
@@ -206,7 +252,8 @@ class _FrotherPageState extends State<FrotherPage> {
             style: TextStyle(color: Colors.black), // Set text color to black
           ),
         ),
-        backgroundColor: Colors.transparent, // Set background color to transparent
+        backgroundColor:
+            Colors.transparent, // Set background color to transparent
         elevation: 0, // Remove shadow
       ),
       body: Padding(
@@ -250,8 +297,10 @@ class _FrotherPageState extends State<FrotherPage> {
                   return Container(
                     decoration: BoxDecoration(
                       color: Colors.white, // Set background color to white
-                      borderRadius: BorderRadius.circular(20.0), // Rounded borders
-                      border: Border.all(color: Colors.black, width: 2), // Black, bold border
+                      borderRadius:
+                          BorderRadius.circular(20.0), // Rounded borders
+                      border: Border.all(
+                          color: Colors.black, width: 2), // Black, bold border
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -271,21 +320,24 @@ class _FrotherPageState extends State<FrotherPage> {
                         ),
                         SizedBox(height: 10),
                         ElevatedButton(
-                          onPressed: () {
-                            _showConfirmationDialog(context, patternTitle, () {
-                              if (index == 0) {
-                                _runCircle();
-                              } else if (index == 1) {
-                                _runSquare();
-                              } else if (index == 2) {
-                                _runTriangle();
-                              } else if (index == 3) {
-                                _runStar();
-                              } else {
-                                _toggleCircle();
-                              }
-                            });
-                          },
+                          onPressed: _isPatternRunning
+                              ? null
+                              : () {
+                                  _showConfirmationDialog(context, patternTitle,
+                                      () {
+                                    if (index == 0) {
+                                      _runCircle();
+                                    } else if (index == 1) {
+                                      _runSquare();
+                                    } else if (index == 2) {
+                                      _runTriangle();
+                                    } else if (index == 3) {
+                                      _runStar();
+                                    } else {
+                                      _toggleCircle();
+                                    }
+                                  });
+                                },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFFD5CEA3), // Button color
                             shape: RoundedRectangleBorder(
@@ -299,7 +351,8 @@ class _FrotherPageState extends State<FrotherPage> {
                           child: Text(
                             'Start',
                             style: TextStyle(
-                                color: Colors.white, fontSize: 16), // Smaller button text
+                                color: Colors.white,
+                                fontSize: 16), // Smaller button text
                           ),
                         ),
                       ],
@@ -312,9 +365,10 @@ class _FrotherPageState extends State<FrotherPage> {
             SizedBox(
               width: 200, // Fixed width, adjustable as needed
               child: ElevatedButton(
-                onPressed: _navigateToAdjustmentPage,
+                onPressed: _isPatternRunning ? _navigateToAdjustmentPage : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFD5CEA3),
+                  backgroundColor:
+                      _isPatternRunning ? Color(0xFFD5CEA3) : Colors.grey,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20.0),
                   ),
@@ -332,9 +386,9 @@ class _FrotherPageState extends State<FrotherPage> {
             SizedBox(
               width: 200, // Same width as the above button
               child: ElevatedButton(
-                onPressed: _stop,
+                onPressed: _isPatternRunning ? _stop : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
+                  backgroundColor: _isPatternRunning ? Colors.red : Colors.grey,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20.0),
                   ),
