@@ -3,6 +3,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'config.dart'; 
 
 class HomeConnectLogin extends StatefulWidget {
   @override
@@ -22,7 +23,7 @@ class _HomeConnectLoginState extends State<HomeConnectLogin> {
       body: Stack(
         children: [
           WebView(
-            initialUrl: 'https://simulator.home-connect.com/security/oauth/authorize?response_type=code&client_id=80840A20EDD4AC02F079C0B7493FB2BC6BCC7862D4BBB13D9688894A3438D983&redirect_uri=https://webhook.site/393b00e2-e865-4b69-a460-cff142b5937d&scope=IdentifyAppliance%20Monitor%20Control',
+            initialUrl: 'https://simulator.home-connect.com/security/oauth/authorize?response_type=code&client_id=80840A20EDD4AC02F079C0B7493FB2BC6BCC7862D4BBB13D9688894A3438D983&redirect_uri=https://webhook.site/8b0a17d4-8c96-4702-aacd-8bf34ab266ba&scope=IdentifyAppliance%20Monitor%20Control',
             javascriptMode: JavascriptMode.unrestricted,
             onWebViewCreated: (WebViewController webViewController) {
               _webViewController = webViewController;
@@ -64,7 +65,8 @@ class _HomeConnectLoginState extends State<HomeConnectLogin> {
 
   Future<void> _exchangeCodeForToken(String code) async {
     final response = await http.post(
-      Uri.parse('http://10.0.2.2:5000/token'),
+     // Uri.parse('http://10.0.2.2:5000/token'),
+      Uri.parse('$baseUrl/token'),
       body: {'code': code},
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
     );

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:my_first_app/config.dart';  // 确保你的配置文件中有正确的baseUrl
+import 'package:my_first_app/config.dart'; // Ensure that your config file contains the correct baseUrl
 
 class CustomizePage extends StatefulWidget {
   @override
@@ -12,10 +12,13 @@ class CustomizePage extends StatefulWidget {
 class _CustomizePageState extends State<CustomizePage> {
   bool isHardwareRunning = false;
 
-  // 使用Socket发送数据
+  // Use Socket to send data
   Future<void> sendInputToServer(String text) async {
     try {
-      final socket = await Socket.connect(socketUrl.split('//')[1].split(':')[0], int.parse(socketUrl.split(':')[2]));
+      final socket = await Socket.connect(
+        socketUrl.split('//')[1].split(':')[0],
+        int.parse(socketUrl.split(':')[2]),
+      );
       socket.write(text);
       await socket.close();
     } catch (e) {
@@ -23,42 +26,72 @@ class _CustomizePageState extends State<CustomizePage> {
     }
   }
 
-  // 发送启动请求到后端
+  // Send a start request to the backend
   Future<void> _startHardwareControl() async {
+    // Record the time at the start
+    final startTime = DateTime.now().millisecondsSinceEpoch;
+
     try {
-      final response = await http.post(Uri.parse('$baseUrl/run_program'));
+      // Send a start request to the backend
+      final response = await http.post(
+        Uri.parse('$baseUrl/run_program'),
+        body: json.encode({'start_time': startTime}),
+        headers: {'Content-Type': 'application/json'},
+      );
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Program started successfully!')));
+        final backendTime = data['backend_time']; // Get the time from the backend
+
+        // Calculate the frontend time
+        final clientEndTime = DateTime.now().millisecondsSinceEpoch;
+        final frontEndTime = clientEndTime - startTime;
+
+        final totalTime = backendTime + frontEndTime;
+
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Program started! Total time: ${totalTime}ms'),
+        ));
+
         setState(() {
           isHardwareRunning = true;
         });
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to start program.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to start program.')),
+        );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error starting program.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error starting program.')),
+      );
     }
   }
 
-  // 发送停止请求到后端
+  // Send a stop request to the backend
   Future<void> _stopHardwareControl() async {
     try {
       final response = await http.post(Uri.parse('$baseUrl/stop_hardware_control'));
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Program stopped successfully!')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Program stopped successfully!')),
+        );
         setState(() {
           isHardwareRunning = false;
         });
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to stop program.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to stop program.')),
+        );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error stopping program.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error stopping program.')),
+      );
     }
   }
 
-  // 控制方向的功能函数
+  // Function to control directions
   Future<void> _runForward() async {
     if (isHardwareRunning) await sendInputToServer('w');
   }
@@ -83,18 +116,18 @@ class _CustomizePageState extends State<CustomizePage> {
     if (isHardwareRunning) await sendInputToServer('e');
   }
 
-  // 放置颗粒的功能
+  // Function to drop particles
   Future<void> _dropParticles() async {
     if (isHardwareRunning) {
-      await sendInputToServer('x');
+      await sendInputToServer('x'); // Send the drop command
       await Future.delayed(Duration(seconds: 1));
-      await _stopHardwareControl();
+      await _stopHardwareControl(); // Stop hardware control after dropping
     }
   }
 
   @override
   void dispose() {
-    _dropParticles();
+    _dropParticles(); // Stop hardware when the page is destroyed
     super.dispose();
   }
 
@@ -102,7 +135,7 @@ class _CustomizePageState extends State<CustomizePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,  // 标题居中
+        centerTitle: true, // Center the title
         title: Text(
           'Customize Page',
           style: TextStyle(color: Colors.black),

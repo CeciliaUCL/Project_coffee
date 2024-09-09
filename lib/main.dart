@@ -82,7 +82,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Your App Title',
       theme: ThemeData(
-        primarySwatch: Colors.brown, // Use a predefined MaterialColor
+        //primarySwatch: Colors.brown, // Use a predefined MaterialColor
       ),
       home: MainPage(),
     );

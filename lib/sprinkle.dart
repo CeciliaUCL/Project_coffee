@@ -16,9 +16,9 @@ class SprinklePage extends StatefulWidget {
 
 class _SprinklePageState extends State<SprinklePage> {
   Future<void> _stop() async {
-    // 停止操作的实现逻辑
+    // Logic to implement stop operation
   }
-  
+
   void _showConfirmationDialog(
       BuildContext context, String patternTitle, VoidCallback onConfirm) {
     showDialog(
@@ -60,22 +60,28 @@ class _SprinklePageState extends State<SprinklePage> {
       MaterialPageRoute(builder: (context) => TrianglePage()),
     );
   }
- void _navigateToSquarePage() {
+
+  void _navigateToSquarePage() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => SquarePage()),
     );
-  } void _navigateToHexagonPage() {
+  }
+
+  void _navigateToHexagonPage() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => HexagonPage()),
     );
-  } void _navigateToFlowerPage() {
+  }
+
+  void _navigateToFlowerPage() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => FlowerPage()),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,34 +115,34 @@ class _SprinklePageState extends State<SprinklePage> {
                     case 0:
                       patternTitle = 'Triangle';
                       patternIcon = CustomPaint(
-                        size: Size(50, 50), // 缩小图像尺寸
+                        size: Size(50, 50), // Reduce the icon size
                         painter: TriangleVerticesPainter(),
                       );
                       break;
                     case 1:
                       patternTitle = 'Square';
                       patternIcon = CustomPaint(
-                        size: Size(50, 50), // 缩小图像尺寸
+                        size: Size(50, 50), // Reduce the icon size
                         painter: SquareVerticesPainter(),
                       );
                       break;
                     case 2:
                       patternTitle = 'Hexagon';
                       patternIcon = CustomPaint(
-                        size: Size(50, 50), // 缩小图像尺寸
+                        size: Size(50, 50), // Reduce the icon size
                         painter: HexagonVerticesPainter(),
                       );
                       break;
                     case 3:
-                      patternTitle = 'Star';
-                       patternIcon = CustomPaint(
-                        size: Size(50, 50), // 缩小图像尺寸
+                      patternTitle = 'Pentagon';
+                      patternIcon = CustomPaint(
+                        size: Size(50, 50), // Reduce the icon size
                         painter: FlowerVerticesPainter(),
                       );
                       break;
                     default:
                       patternTitle = 'Pattern';
-                      patternIcon = Icon(Icons.help_outline, size: 50, color: Colors.grey[700]); // 缩小图标
+                      patternIcon = Icon(Icons.help_outline, size: 50, color: Colors.grey[700]); // Reduce icon size
                   }
 
                   return Container(
@@ -204,7 +210,7 @@ class _SprinklePageState extends State<SprinklePage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
-                      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                      padding: EdgeInsets.symmetric(vertical: 20),
                       elevation: 10,
                       shadowColor: Colors.black.withOpacity(0.5),
                     ),
@@ -223,7 +229,7 @@ class _SprinklePageState extends State<SprinklePage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
-                      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                      padding: EdgeInsets.symmetric(vertical: 20),
                       elevation: 10,
                       shadowColor: Colors.black.withOpacity(0.5),
                     ),
@@ -257,7 +263,7 @@ class TriangleVerticesPainter extends CustomPainter {
     ];
 
     for (var point in points) {
-      canvas.drawCircle(point, 3, paint); // 缩小点的大小
+      canvas.drawCircle(point, 3, paint); // Reduce the point size
     }
   }
 
@@ -283,7 +289,7 @@ class SquareVerticesPainter extends CustomPainter {
     ];
 
     for (var point in points) {
-      canvas.drawCircle(point, 3, paint); // 缩小点的大小
+      canvas.drawCircle(point, 3, paint); // Reduce the point size
     }
   }
 
@@ -311,15 +317,15 @@ class HexagonVerticesPainter extends CustomPainter {
     ];
 
     for (var point in points) {
-      canvas.drawCircle(point, 3, paint); // 缩小点的大小
+      canvas.drawCircle(point, 3, paint); // Reduce the point size
     }
   }
+
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
     return false;
   }
 }
-
 
 class FlowerVerticesPainter extends CustomPainter {
   @override
@@ -329,7 +335,6 @@ class FlowerVerticesPainter extends CustomPainter {
       ..strokeWidth = 10
       ..style = PaintingStyle.fill;
 
-    // Calculate the points of a regular pentagon
     double cx = size.width / 2;
     double cy = size.height / 2;
     double radius = size.width / 2;
@@ -342,13 +347,9 @@ class FlowerVerticesPainter extends CustomPainter {
       points.add(Offset(x, y));
     }
 
-    // Draw the pentagon vertices
     for (var point in points) {
       canvas.drawCircle(point, 3, paint); // Small circles for vertices
     }
-
-    // Draw the center point
-    canvas.drawCircle(Offset(cx, cy), 3, paint); // Center point
   }
 
   @override
@@ -356,4 +357,3 @@ class FlowerVerticesPainter extends CustomPainter {
     return false;
   }
 }
-

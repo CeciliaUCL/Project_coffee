@@ -50,7 +50,7 @@ class _DeviceListState extends State<DeviceList> {
       });
     } else {
       final response = await http.get(
-        Uri.parse('${BASE_URL}get_devices'),
+        Uri.parse('$baseUrl/get_devices'),
         headers: <String, String>{
           'Authorization': 'Bearer $storedToken',
         },
@@ -59,7 +59,7 @@ class _DeviceListState extends State<DeviceList> {
       if (response.statusCode == 200) {
         setState(() {
           isConnected = true;
-          userName = 'Yating';
+          userName = 'A';
           fetchDevices();
         });
       } else {
@@ -82,7 +82,7 @@ class _DeviceListState extends State<DeviceList> {
     }
 
     final response = await http.get(
-      Uri.parse('${BASE_URL}get_devices'),
+      Uri.parse('$baseUrl/get_devices'),
       headers: <String, String>{
         'Authorization': 'Bearer $accessToken',
       },
@@ -180,15 +180,15 @@ class _DeviceListState extends State<DeviceList> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: device.connected
-                        ? null  // 如果设备已连接（ON），禁用 Turn On 按钮
+                        ? null  // If the device is connected (ON), disable the Turn On button
                         : () {
                             redirectToSimulator();
                           },
                     child: Text('Turn On'),
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 8),
-                      backgroundColor: device.connected ? Colors.grey : Theme.of(context).primaryColor,  // 背景颜色调整
-                      foregroundColor: Colors.white,  // 文字颜色调整为白色
+                      backgroundColor: device.connected ? Colors.grey : Theme.of(context).primaryColor,  // Background color adjustment
+                      foregroundColor: Colors.white,  // Set text color to white
                     ),
                   ),
                 ),
@@ -206,13 +206,13 @@ class _DeviceListState extends State<DeviceList> {
                               });
                             });
                           }
-                        : null,  // 如果设备未连接（OFF），禁用 Control 按钮
+                        : null,  // If the device is not connected (OFF), disable the Control button
                     child: Text('Control'),
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: device.connected
                           ? Theme.of(context).primaryColor
-                          : Colors.grey,  // 当按钮禁用时显示灰色
+                          : Colors.grey,  // Show grey when the button is disabled
                       padding: EdgeInsets.symmetric(vertical: 8),
                     ),
                   ),

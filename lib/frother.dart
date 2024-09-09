@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'config.dart'; // 导入配置文件
+import 'config.dart'; // Import the configuration file
+import 'adjustment_page.dart'; // Import the adjustment page
 
 class FrotherPage extends StatefulWidget {
   @override
@@ -10,6 +11,7 @@ class FrotherPage extends StatefulWidget {
 
 class _FrotherPageState extends State<FrotherPage> {
   bool _showCircle = false;
+  String? _selectedPattern;
 
   void _toggleCircle() {
     setState(() {
@@ -18,9 +20,12 @@ class _FrotherPageState extends State<FrotherPage> {
   }
 
   Future<void> _runCircle() async {
+    setState(() {
+      _selectedPattern = 'Circle';
+    });
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/run_circle'), // 使用 baseUrl
+        Uri.parse('$baseUrl/run_circle'), // Use baseUrl
       );
 
       if (response.statusCode == 200) {
@@ -45,9 +50,12 @@ class _FrotherPageState extends State<FrotherPage> {
   }
 
   Future<void> _runSquare() async {
+    setState(() {
+      _selectedPattern = 'Square';
+    });
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/run_square'), // 使用 baseUrl
+        Uri.parse('$baseUrl/run_square'), // Use baseUrl
       );
 
       if (response.statusCode == 200) {
@@ -72,9 +80,12 @@ class _FrotherPageState extends State<FrotherPage> {
   }
 
   Future<void> _runTriangle() async {
+    setState(() {
+      _selectedPattern = 'Triangle';
+    });
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/run_triangle'), // 使用 baseUrl
+        Uri.parse('$baseUrl/run_triangle'), // Use baseUrl
       );
 
       if (response.statusCode == 200) {
@@ -99,9 +110,12 @@ class _FrotherPageState extends State<FrotherPage> {
   }
 
   Future<void> _runStar() async {
+    setState(() {
+      _selectedPattern = 'Star';
+    });
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/run_star'), // 使用 baseUrl
+        Uri.parse('$baseUrl/run_star'), // Use baseUrl
       );
 
       if (response.statusCode == 200) {
@@ -125,63 +139,9 @@ class _FrotherPageState extends State<FrotherPage> {
     }
   }
 
-  Future<void> _runHeart() async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/run_heart'), // 使用 baseUrl
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        print('Output: ${data['output']}');
-        print('Error: ${data['error']}');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Heart command sent successfully!'),
-        ));
-      } else {
-        print('Failed to run code: ${response.reasonPhrase}');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Failed to run heart command.'),
-        ));
-      }
-    } catch (e) {
-      print('Error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Error running heart command.'),
-      ));
-    }
-  }
-
-  // Future<void> _runCloud() async {
-  //   try {
-  //     final response = await http.post(
-  //       Uri.parse('$baseUrl/run_cloud'), // 使用 baseUrl
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       final data = json.decode(response.body);
-  //       print('Output: ${data['output']}');
-  //       print('Error: ${data['error']}');
-  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //         content: Text('Cloud command sent successfully!'),
-  //       ));
-  //     } else {
-  //       print('Failed to run code: ${response.reasonPhrase}');
-  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //         content: Text('Failed to run cloud command.'),
-  //       ));
-  //     }
-  //   } catch (e) {
-  //     print('Error: $e');
-  //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //       content: Text('Error running cloud command.'),
-  //     ));
-  //   }
-  // }
-
   Future<void> _stop() async {
     final response = await http.post(
-      Uri.parse('$baseUrl/stop'), // 使用 baseUrl
+      Uri.parse('$baseUrl/stop'), // Use baseUrl
     );
 
     if (response.statusCode == 200) {
@@ -194,6 +154,17 @@ class _FrotherPageState extends State<FrotherPage> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Failed to stop process.'),
       ));
+    }
+  }
+
+  void _navigateToAdjustmentPage() {
+    if (_selectedPattern != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AdjustmentPage(patternTitle: _selectedPattern!),
+        ),
+      );
     }
   }
 
@@ -232,11 +203,11 @@ class _FrotherPageState extends State<FrotherPage> {
         title: Center(
           child: Text(
             'Choose Frother Pattern',
-            style: TextStyle(color: Colors.black), // 设置文字颜色为黑色
+            style: TextStyle(color: Colors.black), // Set text color to black
           ),
         ),
-        backgroundColor: Colors.transparent, // 设置背景颜色为透明
-        elevation: 0, // 移除阴影
+        backgroundColor: Colors.transparent, // Set background color to transparent
+        elevation: 0, // Remove shadow
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -250,7 +221,7 @@ class _FrotherPageState extends State<FrotherPage> {
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
                 ),
-                itemCount: 5, // 修改为6个项目
+                itemCount: 4, // Update the number of icons
                 itemBuilder: (context, index) {
                   String patternTitle;
                   IconData patternIcon;
@@ -269,11 +240,7 @@ class _FrotherPageState extends State<FrotherPage> {
                       break;
                     case 3:
                       patternTitle = 'Star';
-                      patternIcon = Icons.star_border_outlined;
-                      break;
-                    case 4:
-                      patternTitle = 'Heart';
-                      patternIcon = Icons.favorite_border;
+                      patternIcon = Icons.star_border;
                       break;
                     default:
                       patternTitle = 'Pattern';
@@ -282,9 +249,9 @@ class _FrotherPageState extends State<FrotherPage> {
 
                   return Container(
                     decoration: BoxDecoration(
-                      color: Colors.white, // 背景颜色为白色
-                      borderRadius: BorderRadius.circular(20.0), // 边框圆角
-                      border: Border.all(color: Colors.black, width: 2), // 黑色加粗边框
+                      color: Colors.white, // Set background color to white
+                      borderRadius: BorderRadius.circular(20.0), // Rounded borders
+                      border: Border.all(color: Colors.black, width: 2), // Black, bold border
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -300,7 +267,7 @@ class _FrotherPageState extends State<FrotherPage> {
                         Icon(
                           patternIcon,
                           size: 80,
-                          color: Colors.grey[700], // 设置图标颜色
+                          color: Colors.grey[700], // Set icon color
                         ),
                         SizedBox(height: 10),
                         ElevatedButton(
@@ -314,27 +281,25 @@ class _FrotherPageState extends State<FrotherPage> {
                                 _runTriangle();
                               } else if (index == 3) {
                                 _runStar();
-                              } else if (index == 4) {
-                                _runHeart();
-                              }  else {
+                              } else {
                                 _toggleCircle();
                               }
                             });
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFD5CEA3), // 按钮颜色
+                            backgroundColor: Color(0xFFD5CEA3), // Button color
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20.0),
                             ),
                             padding: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10), // 按钮变小
+                                horizontal: 20, vertical: 10), // Smaller button
                             elevation: 10,
                             shadowColor: Colors.black.withOpacity(0.5),
                           ),
                           child: Text(
                             'Start',
                             style: TextStyle(
-                                color: Colors.white, fontSize: 16), // 按钮文字稍微小一点
+                                color: Colors.white, fontSize: 16), // Smaller button text
                           ),
                         ),
                       ],
@@ -344,22 +309,45 @@ class _FrotherPageState extends State<FrotherPage> {
               ),
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _stop,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red, // 设置按钮颜色为红色
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
+            SizedBox(
+              width: 200, // Fixed width, adjustable as needed
+              child: ElevatedButton(
+                onPressed: _navigateToAdjustmentPage,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFFD5CEA3),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  elevation: 10,
+                  shadowColor: Colors.black.withOpacity(0.5),
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                elevation: 10,
-                shadowColor: Colors.black.withOpacity(0.5),
-              ),
-              child: Text(
-                'Stop',
-                style: TextStyle(color: Colors.white, fontSize: 18),
+                child: Text(
+                  'Adjust',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
               ),
             ),
+            SizedBox(height: 10),
+            SizedBox(
+              width: 200, // Same width as the above button
+              child: ElevatedButton(
+                onPressed: _stop,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  elevation: 10,
+                  shadowColor: Colors.black.withOpacity(0.5),
+                ),
+                child: Text(
+                  'Stop',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              ),
+            )
           ],
         ),
       ),
